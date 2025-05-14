@@ -5,6 +5,7 @@ import WelcomeMessage from "@/components/WelcomeMessage";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface ChatInterfaceProps {
   messages: Message[];
@@ -21,12 +22,7 @@ export default function ChatInterface({
 }: ChatInterfaceProps) {
   const [message, setMessage] = useState("");
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const suggestedQuestions = [
-    "What is my dosha type?",
-    "Remedies for stress",
-    "Daily Ayurvedic routine",
-    "Herbs for immunity"
-  ];
+  const { t } = useLanguage();
 
   const handleSendMessage = () => {
     if (message.trim() && !isLoading) {
@@ -127,7 +123,7 @@ export default function ChatInterface({
             <div className="bg-white dark:bg-card rounded-xl shadow-md flex items-end">
               <Textarea
                 ref={messageInputRef}
-                placeholder="Ask about Ayurvedic wellness..."
+                placeholder={t('chat.placeholder')}
                 value={message}
                 onChange={handleTextareaChange}
                 onKeyDown={handleKeyDown}

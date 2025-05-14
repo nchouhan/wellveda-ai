@@ -1,17 +1,20 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { images } from "@/lib/images";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface WelcomeMessageProps {
   onQuestionSelect: (question: string) => void;
 }
 
 export default function WelcomeMessage({ onQuestionSelect }: WelcomeMessageProps) {
+  const { t } = useLanguage();
+  
   const suggestedQuestions = [
-    "What is my dosha type?",
-    "Remedies for stress",
-    "Daily Ayurvedic routine",
-    "Herbs for immunity"
+    t('question.dosha'),
+    t('question.stress'),
+    t('question.routine'),
+    t('question.immunity')
   ];
 
   return (
@@ -26,9 +29,9 @@ export default function WelcomeMessage({ onQuestionSelect }: WelcomeMessageProps
             />
           </div>
           <div>
-            <h2 className="font-bold text-xl text-primary mb-2">Welcome to WellVeda AI</h2>
+            <h2 className="font-bold text-xl text-primary mb-2">{t('welcome.title')}</h2>
             <p className="text-gray-600 mb-4">
-              I'm your personal Ayurvedic wellness assistant, here to answer your questions about traditional Ayurvedic practices, herbs, remedies, and wellness routines.
+              {t('welcome.description')}
             </p>
             <div className="flex flex-wrap gap-2">
               {suggestedQuestions.map((question, index) => (
@@ -54,9 +57,9 @@ export default function WelcomeMessage({ onQuestionSelect }: WelcomeMessageProps
             className="w-full h-32 object-cover"
           />
           <CardContent className="p-4">
-            <h3 className="font-medium text-primary">Natural Balance</h3>
+            <h3 className="font-medium text-primary">{t('welcome.card1.title')}</h3>
             <p className="text-xs text-gray-600 mt-1">
-              Learn how Ayurveda helps maintain harmony with nature
+              {t('welcome.card1.description')}
             </p>
           </CardContent>
         </Card>
@@ -68,9 +71,9 @@ export default function WelcomeMessage({ onQuestionSelect }: WelcomeMessageProps
             className="w-full h-32 object-cover"
           />
           <CardContent className="p-4">
-            <h3 className="font-medium text-primary">Herbal Wisdom</h3>
+            <h3 className="font-medium text-primary">{t('welcome.card2.title')}</h3>
             <p className="text-xs text-gray-600 mt-1">
-              Discover powerful herbs used in Ayurvedic traditions
+              {t('welcome.card2.description')}
             </p>
           </CardContent>
         </Card>
@@ -82,9 +85,9 @@ export default function WelcomeMessage({ onQuestionSelect }: WelcomeMessageProps
             className="w-full h-32 object-cover"
           />
           <CardContent className="p-4">
-            <h3 className="font-medium text-primary">Modern Wellness</h3>
+            <h3 className="font-medium text-primary">{t('welcome.card3.title')}</h3>
             <p className="text-xs text-gray-600 mt-1">
-              Integrate ancient wisdom into contemporary lifestyles
+              {t('welcome.card3.description')}
             </p>
           </CardContent>
         </Card>
@@ -108,7 +111,7 @@ export default function WelcomeMessage({ onQuestionSelect }: WelcomeMessageProps
         </div>
         <Card className="bg-white dark:bg-card rounded-xl rounded-tl-none shadow-sm p-4 max-w-[85%]">
           <p className="text-gray-700">
-            Namaste! I'm WellVeda AI, your Ayurvedic wellness assistant. I can help you explore Ayurvedic practices, remedies, and lifestyle recommendations for better health and well-being. Feel free to ask me anything about Ayurveda!
+            {t('welcome.greeting')}
           </p>
         </Card>
       </div>
