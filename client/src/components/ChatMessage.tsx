@@ -92,7 +92,7 @@ export default function ChatMessage({ message }: ChatMessageProps) {
           <path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27" />
         </svg>
       </div>
-      <Card className="bg-white dark:bg-card rounded-xl rounded-tl-none shadow-sm p-4 space-y-3 max-w-[85%]">
+      <Card className="bg-white dark:bg-card rounded-xl rounded-tl-none shadow-lg p-6 space-y-4 max-w-[85%] border-0">
         {renderContent()}
       </Card>
     </div>

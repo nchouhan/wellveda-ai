@@ -65,7 +65,7 @@ export default function ChatInterface({
     <main className="flex-1 overflow-hidden relative">
       <div 
         ref={chatContainerRef}
-        className="chat-container overflow-y-auto px-4 lg:px-0 pt-4 pb-32 custom-scrollbar"
+        className="chat-container overflow-y-auto px-4 lg:px-0 pt-8 pb-32 space-y-8 custom-scrollbar"
       >
         <div className="max-w-3xl mx-auto space-y-6">
           {messages.length === 0 ? (
