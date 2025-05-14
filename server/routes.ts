@@ -2,19 +2,46 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { messageRequestSchema, threadRequestSchema } from "@shared/schema";
-import OpenAI from "openai";
+import { openai } from "./openai";
+import dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config();
 
 const ASSISTANT_ID = "asst_NXGBmeSbyaBdsWNjGzSG467R";
 
-// Initialize OpenAI with API key from environment
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || "",
-});
-
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Check if the OpenAI API key is set
+  if (!process.env.OPENAI_API_KEY) {
+    console.error("ERROR: OPENAI_API_KEY is not set in environment variables");
+  }
   // Health check endpoint
   app.get("/api/health", (_req, res) => {
     res.json({ status: "ok" });
+  });
+  
+  // OpenAI API key check endpoint
+  app.get("/api/openai/status", async (_req, res) => {
+    try {
+      const { valid, message } = await openai.checkApiKey();
+      if (valid) {
+        return res.json({ 
+          status: "ok", 
+          message: "OpenAI API key is valid" 
+        });
+      } else {
+        return res.status(401).json({ 
+          status: "error", 
+          message: message || "Invalid OpenAI API key" 
+        });
+      }
+    } catch (error: any) {
+      console.error("Error checking OpenAI API key:", error.message);
+      return res.status(500).json({ 
+        status: "error", 
+        message: error.message || "Failed to check OpenAI API key" 
+      });
+    }
   });
   
   // Create a new thread

@@ -3,8 +3,12 @@ import { Message } from "@/types/chat";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
-// Key for localStorage
+// Keys for localStorage
 const THREAD_ID_KEY = "wellveda_thread_id";
+const API_STATUS_CHECK_KEY = "wellveda_api_check_time";
+
+// Interval for checking API status (24 hours)
+const API_CHECK_INTERVAL = 24 * 60 * 60 * 1000; 
 
 export function useChat() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -12,10 +16,51 @@ export function useChat() {
     // Try to retrieve threadId from localStorage on initial load
     return localStorage.getItem(THREAD_ID_KEY);
   });
+  const [isApiValid, setIsApiValid] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState(false);
   const messageInputRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
   const createThreadAttempts = useRef(0);
+
+  // Check OpenAI API status
+  const checkApiStatus = async () => {
+    try {
+      const lastCheckTime = localStorage.getItem(API_STATUS_CHECK_KEY);
+      
+      // Check if we need to verify the API again
+      const shouldCheck = !lastCheckTime || 
+        (Date.now() - parseInt(lastCheckTime, 10) > API_CHECK_INTERVAL);
+      
+      if (shouldCheck) {
+        const response = await apiRequest("GET", "/api/openai/status", null);
+        const isValid = response.status === 200;
+        
+        setIsApiValid(isValid);
+        localStorage.setItem(API_STATUS_CHECK_KEY, Date.now().toString());
+        
+        if (!isValid) {
+          console.error("OpenAI API key is not valid");
+          toast({
+            title: "API Key Error",
+            description: "The OpenAI API key is not working. Please contact support.",
+            variant: "destructive",
+          });
+        }
+        
+        return isValid;
+      }
+      
+      return true;
+    } catch (error) {
+      console.error("Failed to check API status:", error);
+      return false;
+    }
+  };
+
+  // Check API status on component mount
+  useEffect(() => {
+    checkApiStatus();
+  }, []);
 
   // Create a new thread on initial load if needed
   useEffect(() => {
