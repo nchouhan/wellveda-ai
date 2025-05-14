@@ -78,6 +78,17 @@ export function useChat() {
 
   // Create a new thread
   const createNewThread = async () => {
+    // Check API status first
+    const apiValid = await checkApiStatus();
+    if (!apiValid) {
+      toast({
+        title: "API Error",
+        description: "Cannot connect to OpenAI service. Please try again later or contact support.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     // Limit the number of creation attempts to prevent infinite loops
     if (createThreadAttempts.current >= 3) {
       toast({
@@ -93,6 +104,12 @@ export function useChat() {
     try {
       setIsLoading(true);
       const response = await apiRequest("POST", "/api/chat/thread", null);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create thread");
+      }
+      
       const data = await response.json();
       
       if (data.threadId) {
@@ -104,12 +121,23 @@ export function useChat() {
         throw new Error("No threadId returned from server");
       }
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: "Failed to create new conversation. Please try again.",
-        variant: "destructive",
-      });
       console.error("Failed to create thread:", error);
+      
+      // If we have a specific error message about the API key, show it
+      if (error.message && error.message.includes("API key")) {
+        toast({
+          title: "API Key Error",
+          description: "The OpenAI API key is not working. Please contact support.",
+          variant: "destructive",
+        });
+        setIsApiValid(false);
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to create new conversation. Please try again.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -117,6 +145,19 @@ export function useChat() {
 
   // Send a message to the API
   const sendMessage = async (content: string) => {
+    // First check if the API is valid
+    if (!isApiValid) {
+      const apiValid = await checkApiStatus();
+      if (!apiValid) {
+        toast({
+          title: "API Error",
+          description: "Cannot connect to OpenAI service. Please try again later or contact support.",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+    
     // If no threadId, try to create one before sending
     if (!threadId) {
       await createNewThread();

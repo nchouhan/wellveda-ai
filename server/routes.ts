@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { messageRequestSchema, threadRequestSchema } from "@shared/schema";
-import { openai } from "./openai";
+import { openai, checkApiKey } from "./openai";
 import dotenv from "dotenv";
 
 // Load environment variables
@@ -23,7 +23,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // OpenAI API key check endpoint
   app.get("/api/openai/status", async (_req, res) => {
     try {
-      const { valid, message } = await openai.checkApiKey();
+      const { valid, message } = await checkApiKey();
+      
       if (valid) {
         return res.json({ 
           status: "ok", 
