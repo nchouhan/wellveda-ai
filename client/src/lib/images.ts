@@ -1,7 +1,7 @@
 // URLs for images used throughout the app
 export const images = {
   // Ayurvedic herbs and remedies
-  herbs1: "https://images.unsplash.com/photo-1627446787775-8dcc6d6b2204?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+  herbs1: "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
   herbs2: "https://images.unsplash.com/photo-1515377905703-c4788e51af15?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
   herbs3: "https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
   herbs4: "https://images.unsplash.com/photo-1515364229230-7bfd3b94c2d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
