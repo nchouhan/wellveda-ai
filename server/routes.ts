@@ -23,22 +23,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Validate request
       const parseResult = threadRequestSchema.safeParse(req.body);
       if (!parseResult.success) {
-        return res.status(400).json({ error: parseResult.error.message });
+        return res.status(400).json({ 
+          error: parseResult.error.message,
+          errorCode: "INVALID_REQUEST"
+        });
       }
       
       // Create a thread with OpenAI
-      const thread = await openai.beta.threads.create();
+      let threadId;
+      let retryCount = 0;
+      const maxRetries = 2;
+      
+      while (retryCount <= maxRetries) {
+        try {
+          const thread = await openai.beta.threads.create();
+          threadId = thread.id;
+          break;
+        } catch (threadError) {
+          retryCount++;
+          if (retryCount > maxRetries) {
+            throw threadError;
+          }
+          // Wait briefly before retrying
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+      }
+      
+      if (!threadId) {
+        throw new Error("Failed to create thread after multiple attempts");
+      }
       
       // Store thread ID
-      await storage.createThread({ threadId: thread.id });
+      await storage.createThread({ threadId });
       
       return res.json({ 
-        threadId: thread.id,
+        threadId,
         success: true
       });
     } catch (error) {
       console.error("Error creating thread:", error);
-      return res.status(500).json({ error: "Failed to create thread" });
+      return res.status(500).json({ 
+        error: "Failed to create thread",
+        errorCode: "THREAD_CREATION_FAILED" 
+      });
     }
   });
   
@@ -48,10 +75,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Validate request
       const parseResult = messageRequestSchema.safeParse(req.body);
       if (!parseResult.success) {
-        return res.status(400).json({ error: parseResult.error.message });
+        return res.status(400).json({ 
+          error: parseResult.error.message,
+          errorCode: "INVALID_REQUEST"
+        });
       }
       
       const { threadId, message } = parseResult.data;
+      
+      // Verify the thread exists first
+      try {
+        await openai.beta.threads.retrieve(threadId);
+      } catch (threadError) {
+        console.error(`Thread with ID ${threadId} not found:`, threadError);
+        return res.status(404).json({ 
+          error: "Thread not found. A new conversation should be created.",
+          errorCode: "THREAD_NOT_FOUND"
+        });
+      }
       
       // Add message to thread
       await openai.beta.threads.messages.create(threadId, {
@@ -85,22 +126,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       if (runStatus.status === "failed") {
-        return res.status(500).json({ error: "Assistant run failed" });
+        console.error(`Run ${run.id} failed for thread ${threadId}`);
+        return res.status(500).json({ 
+          error: "Assistant run failed", 
+          errorCode: "ASSISTANT_RUN_FAILED" 
+        });
       }
       
       if (runStatus.status !== "completed") {
-        return res.status(504).json({ error: "Assistant run timed out" });
+        console.error(`Run ${run.id} timed out after ${attempts} attempts for thread ${threadId}`);
+        return res.status(504).json({ 
+          error: "Assistant run timed out",
+          errorCode: "ASSISTANT_RUN_TIMEOUT"
+        });
       }
       
-      // Get messages from the thread
-      const messages = await openai.beta.threads.messages.list(threadId);
+      let messages;
+      try {
+        // Get messages from the thread
+        messages = await openai.beta.threads.messages.list(threadId);
+      } catch (messagesError) {
+        console.error(`Error retrieving messages for thread ${threadId}:`, messagesError);
+        return res.status(500).json({ 
+          error: "Failed to retrieve assistant messages",
+          errorCode: "MESSAGE_RETRIEVAL_FAILED"
+        });
+      }
       
       // Find the latest assistant message
       const assistantMessages = messages.data.filter(msg => msg.role === "assistant");
       const latestAssistantMessage = assistantMessages[0];
       
       if (!latestAssistantMessage) {
-        return res.status(404).json({ error: "No assistant response found" });
+        console.error(`No assistant message found for thread ${threadId}`);
+        return res.status(404).json({ 
+          error: "No assistant response found",
+          errorCode: "NO_ASSISTANT_RESPONSE"
+        });
       }
       
       // Process the message content
@@ -121,13 +183,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
+      if (!responseContent) {
+        console.error(`Empty response content for thread ${threadId}`);
+        return res.status(500).json({ 
+          error: "Empty assistant response",
+          errorCode: "EMPTY_RESPONSE"
+        });
+      }
+      
       return res.json({ 
         response: responseContent,
         success: true 
       });
     } catch (error) {
       console.error("Error processing message:", error);
-      return res.status(500).json({ error: "Failed to process message" });
+      return res.status(500).json({ 
+        error: "Failed to process message",
+        errorCode: "MESSAGE_PROCESSING_FAILED"
+      });
     }
   });
 
