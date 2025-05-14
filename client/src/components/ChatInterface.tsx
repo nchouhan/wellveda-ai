@@ -5,7 +5,6 @@ import WelcomeMessage from "@/components/WelcomeMessage";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { motion, AnimatePresence } from "framer-motion";
-import { useLanguage } from "@/hooks/useLanguage";
 
 interface ChatInterfaceProps {
   messages: Message[];
@@ -22,7 +21,12 @@ export default function ChatInterface({
 }: ChatInterfaceProps) {
   const [message, setMessage] = useState("");
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const { t } = useLanguage();
+  const suggestedQuestions = [
+    "What is my dosha type?",
+    "Remedies for stress",
+    "Daily Ayurvedic routine",
+    "Herbs for immunity"
+  ];
 
   const handleSendMessage = () => {
     if (message.trim() && !isLoading) {
@@ -123,7 +127,7 @@ export default function ChatInterface({
             <div className="bg-white dark:bg-card rounded-xl shadow-md flex items-end">
               <Textarea
                 ref={messageInputRef}
-                placeholder={t('chat.placeholder')}
+                placeholder="Ask about Ayurvedic wellness..."
                 value={message}
                 onChange={handleTextareaChange}
                 onKeyDown={handleKeyDown}
@@ -153,7 +157,7 @@ export default function ChatInterface({
               </Button>
             </div>
             <p className="text-xs text-gray-500 mt-2 ml-2">
-              {t('chat.disclaimer')}
+              WellVeda AI is designed for educational purposes and should not replace professional medical advice.
             </p>
           </div>
         </div>

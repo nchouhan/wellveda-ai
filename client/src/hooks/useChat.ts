@@ -3,141 +3,33 @@ import { Message } from "@/types/chat";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
-// Keys for localStorage
-const THREAD_ID_KEY = "wellveda_thread_id";
-const API_STATUS_CHECK_KEY = "wellveda_api_check_time";
-
-// Interval for checking API status (24 hours)
-const API_CHECK_INTERVAL = 24 * 60 * 60 * 1000; 
-
 export function useChat() {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [threadId, setThreadId] = useState<string | null>(() => {
-    // Try to retrieve threadId from localStorage on initial load
-    return localStorage.getItem(THREAD_ID_KEY);
-  });
-  const [isApiValid, setIsApiValid] = useState<boolean>(true);
+  const [threadId, setThreadId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const messageInputRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
-  const createThreadAttempts = useRef(0);
 
-  // Check OpenAI API status
-  const checkApiStatus = async () => {
-    try {
-      const lastCheckTime = localStorage.getItem(API_STATUS_CHECK_KEY);
-      
-      // Check if we need to verify the API again
-      const shouldCheck = !lastCheckTime || 
-        (Date.now() - parseInt(lastCheckTime, 10) > API_CHECK_INTERVAL);
-      
-      if (shouldCheck) {
-        const response = await apiRequest("GET", "/api/openai/status", null);
-        const isValid = response.status === 200;
-        
-        setIsApiValid(isValid);
-        localStorage.setItem(API_STATUS_CHECK_KEY, Date.now().toString());
-        
-        if (!isValid) {
-          console.error("OpenAI API key is not valid");
-          toast({
-            title: "API Key Error",
-            description: "The OpenAI API key is not working. Please contact support.",
-            variant: "destructive",
-          });
-        }
-        
-        return isValid;
-      }
-      
-      return true;
-    } catch (error) {
-      console.error("Failed to check API status:", error);
-      return false;
-    }
-  };
-
-  // Check API status on component mount
+  // Create a new thread on initial load
   useEffect(() => {
-    checkApiStatus();
+    createNewThread();
   }, []);
-
-  // Create a new thread on initial load if needed
-  useEffect(() => {
-    if (!threadId) {
-      createNewThread();
-    }
-  }, [threadId]);
-
-  // Update local storage when threadId changes
-  useEffect(() => {
-    if (threadId) {
-      localStorage.setItem(THREAD_ID_KEY, threadId);
-    }
-  }, [threadId]);
 
   // Create a new thread
   const createNewThread = async () => {
-    // Check API status first
-    const apiValid = await checkApiStatus();
-    if (!apiValid) {
-      toast({
-        title: "API Error",
-        description: "Cannot connect to OpenAI service. Please try again later or contact support.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    // Limit the number of creation attempts to prevent infinite loops
-    if (createThreadAttempts.current >= 3) {
-      toast({
-        title: "Error",
-        description: "Failed to create conversation after multiple attempts. Please reload the page.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    createThreadAttempts.current += 1;
-    
     try {
       setIsLoading(true);
       const response = await apiRequest("POST", "/api/chat/thread", null);
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to create thread");
-      }
-      
       const data = await response.json();
-      
-      if (data.threadId) {
-        setThreadId(data.threadId);
-        localStorage.setItem(THREAD_ID_KEY, data.threadId);
-        setMessages([]);
-        createThreadAttempts.current = 0; // Reset attempts counter on success
-      } else {
-        throw new Error("No threadId returned from server");
-      }
-    } catch (error: any) {
+      setThreadId(data.threadId);
+      setMessages([]);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create new conversation. Please try again.",
+        variant: "destructive",
+      });
       console.error("Failed to create thread:", error);
-      
-      // If we have a specific error message about the API key, show it
-      if (error.message && error.message.includes("API key")) {
-        toast({
-          title: "API Key Error",
-          description: "The OpenAI API key is not working. Please contact support.",
-          variant: "destructive",
-        });
-        setIsApiValid(false);
-      } else {
-        toast({
-          title: "Error",
-          description: "Failed to create new conversation. Please try again.",
-          variant: "destructive",
-        });
-      }
     } finally {
       setIsLoading(false);
     }
@@ -145,32 +37,13 @@ export function useChat() {
 
   // Send a message to the API
   const sendMessage = async (content: string) => {
-    // First check if the API is valid
-    if (!isApiValid) {
-      const apiValid = await checkApiStatus();
-      if (!apiValid) {
-        toast({
-          title: "API Error",
-          description: "Cannot connect to OpenAI service. Please try again later or contact support.",
-          variant: "destructive",
-        });
-        return;
-      }
-    }
-    
-    // If no threadId, try to create one before sending
     if (!threadId) {
-      await createNewThread();
-      
-      // If still no threadId after attempt, show error
-      if (!threadId) {
-        toast({
-          title: "Error",
-          description: "Could not create a conversation. Please refresh the page and try again.",
-          variant: "destructive",
-        });
-        return;
-      }
+      toast({
+        title: "Error",
+        description: "No active conversation. Please refresh the page.",
+        variant: "destructive",
+      });
+      return;
     }
 
     try {
@@ -187,32 +60,19 @@ export function useChat() {
         message: content,
       });
       
-      if (!response.ok) {
-        // If the response indicates the thread doesn't exist, create a new one
-        if (response.status === 404 || response.status === 400) {
-          // Clear the current threadId
-          setThreadId(null);
-          localStorage.removeItem(THREAD_ID_KEY);
-          
-          throw new Error("Thread not found. A new conversation will be created.");
-        }
-        
-        throw new Error(`Request failed with status: ${response.status}`);
-      }
-      
       const data = await response.json();
       
       // Add AI response to the UI
       if (data.response) {
         setMessages((prev) => [...prev, { role: "assistant", content: data.response }]);
       }
-    } catch (error: any) {
-      console.error("Failed to send message:", error);
+    } catch (error) {
       toast({
         title: "Error",
-        description: error?.message || "Failed to send message. Please try again.",
+        description: "Failed to send message. Please try again.",
         variant: "destructive",
       });
+      console.error("Failed to send message:", error);
     } finally {
       setIsLoading(false);
     }
@@ -220,15 +80,7 @@ export function useChat() {
 
   // Start a new conversation
   const startNewConversation = () => {
-    // Clear any existing thread ID
-    setThreadId(null);
-    localStorage.removeItem(THREAD_ID_KEY);
-    setMessages([]);
-    
-    // Create a new thread
     createNewThread();
-    
-    // Focus the input field
     if (messageInputRef.current) {
       messageInputRef.current.focus();
     }

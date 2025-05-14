@@ -2,12 +2,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { useIsMobile } from "@/hooks/use-mobile";
-import LanguageSelector from "@/components/LanguageSelector";
-import { useLanguage } from "@/hooks/useLanguage";
 
 export default function ChatHeader() {
   const isMobile = useIsMobile();
-  const { t } = useLanguage();
   
   return (
     <header className="bg-white dark:bg-card shadow-sm py-4 px-6 flex items-center justify-between">
@@ -29,13 +26,12 @@ export default function ChatHeader() {
           </svg>
           <Input 
             type="text" 
-            placeholder={t('header.search')} 
+            placeholder="Search conversations..." 
             className="w-full rounded-full border border-gray-200 dark:border-gray-700 pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" 
           />
         </div>
       </div>
-      <div className="flex items-center space-x-4">
-        <LanguageSelector />
+      <div>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -57,7 +53,7 @@ export default function ChatHeader() {
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>{t('header.about')}</p>
+              <p>About WellVeda AI</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

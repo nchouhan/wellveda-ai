@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
-import { useLanguage } from "@/hooks/useLanguage";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -10,8 +9,6 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isOpen, onNewChat, onClose }: SidebarProps) {
-  const { t } = useLanguage();
-  
   const handleNewChat = () => {
     onNewChat();
     onClose();
@@ -55,10 +52,10 @@ export default function Sidebar({ isOpen, onNewChat, onClose }: SidebarProps) {
                     <path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27" />
                   </svg>
                 </div>
-                <h1 className="font-bold text-xl text-sidebar-primary">{t('sidebar.title')}</h1>
+                <h1 className="font-bold text-xl text-sidebar-primary">WellVeda AI</h1>
               </div>
               <p className="text-sm text-sidebar-foreground/60 mt-2">
-                {t('sidebar.description')}
+                Your personal Ayurvedic wellness guide
               </p>
             </div>
             
@@ -82,23 +79,23 @@ export default function Sidebar({ isOpen, onNewChat, onClose }: SidebarProps) {
                   <line x1="8" y1="11" x2="8" y2="11.01" />
                   <line x1="16" y1="11" x2="16" y2="11.01" />
                 </svg>
-                <span>{t('sidebar.newChat')}</span>
+                <span>New Conversation</span>
               </Button>
             </div>
             
             <div className="flex-grow p-4 overflow-auto custom-scrollbar">
-              <h2 className="font-medium text-sm uppercase text-sidebar-foreground/50 mb-2">{t('sidebar.about')}</h2>
+              <h2 className="font-medium text-sm uppercase text-sidebar-foreground/50 mb-2">About Ayurveda</h2>
               <div className="space-y-3">
                 <Card className="bg-sidebar-accent hover:shadow-sm cursor-pointer transition-all p-3">
-                  <h3 className="font-medium">{t('sidebar.discover')}</h3>
+                  <h3 className="font-medium">Discover Doshas</h3>
                   <p className="text-xs text-sidebar-foreground/60">Learn about Vata, Pitta, and Kapha</p>
                 </Card>
                 <Card className="bg-sidebar-accent hover:shadow-sm cursor-pointer transition-all p-3">
-                  <h3 className="font-medium">{t('sidebar.seasonal')}</h3>
+                  <h3 className="font-medium">Seasonal Wellness</h3>
                   <p className="text-xs text-sidebar-foreground/60">Adapt your routine with the seasons</p>
                 </Card>
                 <Card className="bg-sidebar-accent hover:shadow-sm cursor-pointer transition-all p-3">
-                  <h3 className="font-medium">{t('sidebar.daily')}</h3>
+                  <h3 className="font-medium">Daily Practices</h3>
                   <p className="text-xs text-sidebar-foreground/60">Simple routines for balance</p>
                 </Card>
               </div>
@@ -106,8 +103,8 @@ export default function Sidebar({ isOpen, onNewChat, onClose }: SidebarProps) {
             
             <div className="p-4 border-t border-sidebar-border mt-auto">
               <div className="text-xs text-sidebar-foreground/50">
-                <p>{t('sidebar.footer1')}</p>
-                <p className="mt-1">{t('sidebar.footer2')}</p>
+                <p>WellVeda AI uses OpenAI's assistant technology</p>
+                <p className="mt-1">Powered by assistant ID: asst_NXGBmeSbyaBdsWNjGzSG467R</p>
               </div>
             </div>
           </motion.div>
