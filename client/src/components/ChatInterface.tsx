@@ -153,7 +153,7 @@ export default function ChatInterface({
               </Button>
             </div>
             <p className="text-xs text-gray-500 mt-2 ml-2">
-              WellVeda AI is designed for educational purposes and should not replace professional medical advice.
+              {t('chat.disclaimer')}
             </p>
           </div>
         </div>
