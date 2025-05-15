@@ -1,21 +1,85 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { images } from "@/lib/images";
+import { useState } from "react";
 
 interface WelcomeMessageProps {
   onQuestionSelect: (question: string) => void;
 }
 
 export default function WelcomeMessage({ onQuestionSelect }: WelcomeMessageProps) {
-  const suggestedQuestions = [
-    "What is my dosha type?",
-    "Remedies for stress",
-    "Daily Ayurvedic routine",
-    "Herbs for immunity"
-  ];
+  const [language, setLanguage] = useState<'english' | 'hindi'>('english');
+
+  const suggestedQuestions = {
+    english: [
+      "What is my dosha type?",
+      "Remedies for stress",
+      "Daily Ayurvedic routine",
+      "Herbs for immunity"
+    ],
+    hindi: [
+      "मेरा दोष प्रकार क्या है?",
+      "तनाव के लिए उपचार",
+      "दैनिक आयुर्वेदिक दिनचर्या",
+      "प्रतिरक्षा के लिए जड़ी-बूटियां"
+    ]
+  };
+
+  const cardTitles = {
+    english: {
+      welcome: "Welcome to WellVeda AI",
+      description: "I'm your personal Ayurvedic wellness assistant, here to answer your questions about traditional Ayurvedic practices, herbs, remedies, and wellness routines.",
+      naturalBalance: "Natural Balance",
+      naturalDesc: "Learn how Ayurveda helps maintain harmony with nature",
+      herbalWisdom: "Herbal Wisdom",
+      herbalDesc: "Discover powerful herbs used in Ayurvedic traditions",
+      modernWellness: "Modern Wellness",
+      modernDesc: "Integrate ancient wisdom into contemporary lifestyles",
+      greeting: "Namaste! I'm WellVeda AI, your Ayurvedic wellness assistant. I can help you explore Ayurvedic practices, remedies, and lifestyle recommendations for better health and well-being. Feel free to ask me anything about Ayurveda!"
+    },
+    hindi: {
+      welcome: "वेलवेदा AI में आपका स्वागत है",
+      description: "मैं आपका निजी आयुर्वेदिक स्वास्थ्य सहायक हूं, यहां पारंपरिक आयुर्वेदिक प्रथाओं, जड़ी-बूटियों, उपचारों और कल्याण दिनचर्या के बारे में आपके प्रश्नों के उत्तर देने के लिए।",
+      naturalBalance: "प्राकृतिक संतुलन",
+      naturalDesc: "जानें कैसे आयुर्वेद प्रकृति के साथ सद्भाव बनाए रखने में मदद करता है",
+      herbalWisdom: "औषधीय ज्ञान",
+      herbalDesc: "आयुर्वेदिक परंपराओं में उपयोग की जाने वाली शक्तिशाली जड़ी-बूटियों की खोज करें",
+      modernWellness: "आधुनिक कल्याण",
+      modernDesc: "प्राचीन ज्ञान को समकालीन जीवनशैली में शामिल करें",
+      greeting: "नमस्ते! मैं वेलवेदा AI हूं, आपका आयुर्वेदिक स्वास्थ्य सहायक। मैं आपको आयुर्वेदिक प्रथाओं, उपचारों और बेहतर स्वास्थ्य और कल्याण के लिए जीवनशैली की सिफारिशों का पता लगाने में मदद कर सकता हूं। आयुर्वेद के बारे में कुछ भी पूछने में संकोच न करें!"
+    }
+  };
+
+  const currentQuestions = suggestedQuestions[language];
+  const currentTitles = cardTitles[language];
 
   return (
     <>
+      <div className="flex justify-end mb-3">
+        <div className="inline-flex rounded-md shadow-sm">
+          <button
+            onClick={() => setLanguage('english')}
+            className={`px-4 py-2 text-sm font-medium border rounded-l-lg ${
+              language === 'english'
+                ? 'bg-primary text-white border-primary'
+                : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+            }`}
+          >
+            English
+          </button>
+          <button
+            onClick={() => setLanguage('hindi')}
+            className={`px-4 py-2 text-sm font-medium border rounded-r-lg ${
+              language === 'hindi'
+                ? 'bg-primary text-white border-primary'
+                : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+            }`}
+          >
+            हिंदी
+          </button>
+        </div>
+      </div>
+
       <Card className="bg-white dark:bg-card rounded-xl shadow-sm p-6 mb-6">
         <div className="flex flex-col lg:flex-row items-center gap-6">
           <div className="shrink-0">
@@ -26,12 +90,12 @@ export default function WelcomeMessage({ onQuestionSelect }: WelcomeMessageProps
             />
           </div>
           <div>
-            <h2 className="font-bold text-xl text-primary mb-2">Welcome to WellVeda AI</h2>
+            <h2 className="font-bold text-xl text-primary mb-2">{currentTitles.welcome}</h2>
             <p className="text-gray-600 mb-4">
-              I'm your personal Ayurvedic wellness assistant, here to answer your questions about traditional Ayurvedic practices, herbs, remedies, and wellness routines.
+              {currentTitles.description}
             </p>
             <div className="flex flex-wrap gap-2">
-              {suggestedQuestions.map((question, index) => (
+              {currentQuestions.map((question, index) => (
                 <Button 
                   key={index} 
                   variant="outline" 
@@ -54,9 +118,9 @@ export default function WelcomeMessage({ onQuestionSelect }: WelcomeMessageProps
             className="w-full h-32 object-cover"
           />
           <CardContent className="p-4">
-            <h3 className="font-medium text-primary">Natural Balance</h3>
+            <h3 className="font-medium text-primary">{currentTitles.naturalBalance}</h3>
             <p className="text-xs text-gray-600 mt-1">
-              Learn how Ayurveda helps maintain harmony with nature
+              {currentTitles.naturalDesc}
             </p>
           </CardContent>
         </Card>
@@ -68,9 +132,9 @@ export default function WelcomeMessage({ onQuestionSelect }: WelcomeMessageProps
             className="w-full h-32 object-cover"
           />
           <CardContent className="p-4">
-            <h3 className="font-medium text-primary">Herbal Wisdom</h3>
+            <h3 className="font-medium text-primary">{currentTitles.herbalWisdom}</h3>
             <p className="text-xs text-gray-600 mt-1">
-              Discover powerful herbs used in Ayurvedic traditions
+              {currentTitles.herbalDesc}
             </p>
           </CardContent>
         </Card>
@@ -82,9 +146,9 @@ export default function WelcomeMessage({ onQuestionSelect }: WelcomeMessageProps
             className="w-full h-32 object-cover"
           />
           <CardContent className="p-4">
-            <h3 className="font-medium text-primary">Modern Wellness</h3>
+            <h3 className="font-medium text-primary">{currentTitles.modernWellness}</h3>
             <p className="text-xs text-gray-600 mt-1">
-              Integrate ancient wisdom into contemporary lifestyles
+              {currentTitles.modernDesc}
             </p>
           </CardContent>
         </Card>
@@ -108,7 +172,7 @@ export default function WelcomeMessage({ onQuestionSelect }: WelcomeMessageProps
         </div>
         <Card className="bg-white dark:bg-card rounded-xl rounded-tl-none shadow-sm p-4 max-w-[85%]">
           <p className="text-gray-700">
-            Namaste! I'm WellVeda AI, your Ayurvedic wellness assistant. I can help you explore Ayurvedic practices, remedies, and lifestyle recommendations for better health and well-being. Feel free to ask me anything about Ayurveda!
+            {currentTitles.greeting}
           </p>
         </Card>
       </div>

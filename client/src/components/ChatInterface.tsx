@@ -20,13 +20,21 @@ export default function ChatInterface({
   messageInputRef,
 }: ChatInterfaceProps) {
   const [message, setMessage] = useState("");
+  const [language, setLanguage] = useState<'english' | 'hindi'>('english');
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const suggestedQuestions = [
-    "What is my dosha type?",
-    "Remedies for stress",
-    "Daily Ayurvedic routine",
-    "Herbs for immunity"
-  ];
+  
+  const translations = {
+    english: {
+      placeholder: "Ask about Ayurvedic wellness...",
+      disclaimer: "WellVeda AI is designed for educational purposes and should not replace professional medical advice.",
+      sendButton: "Send message"
+    },
+    hindi: {
+      placeholder: "आयुर्वेदिक स्वास्थ्य के बारे में पूछें...",
+      disclaimer: "वेलवेदा एआई शैक्षिक उद्देश्यों के लिए डिज़ाइन किया गया है और पेशेवर चिकित्सा सलाह की जगह नहीं लेना चाहिए।",
+      sendButton: "संदेश भेजें"
+    }
+  };
 
   const handleSendMessage = () => {
     if (message.trim() && !isLoading) {
