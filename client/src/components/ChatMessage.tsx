@@ -2,6 +2,20 @@ import { Message } from "@/types/chat";
 import { Card } from "@/components/ui/card";
 import { images } from "@/lib/images";
 
+// Define interfaces for complex message content
+interface ImagePart {
+  type: 'image';
+  image: string;
+  alt?: string;
+}
+
+interface TextPart {
+  type: 'text';
+  text: string;
+}
+
+type MessagePart = string | ImagePart | TextPart;
+
 interface ChatMessageProps {
   message: Message;
 }
@@ -9,11 +23,24 @@ interface ChatMessageProps {
 export default function ChatMessage({ message }: ChatMessageProps) {
   const { role, content } = message;
   
+  // Detect language based on content
+  // This is a simple heuristic - if the message contains Devanagari script, we consider it Hindi
+  const isHindiContent = () => {
+    if (typeof content === 'string') {
+      // Devanagari Unicode range check
+      return /[\u0900-\u097F]/.test(content);
+    }
+    return false;
+  };
+  
+  // Add appropriate font class for Hindi content
+  const languageClass = isHindiContent() ? "font-hindi" : "";
+  
   if (role === "user") {
     return (
       <div className="flex items-start gap-3 justify-end">
         <div className="bg-primary rounded-xl rounded-tr-none p-4 text-white max-w-[85%]">
-          <p className="whitespace-pre-wrap">{content}</p>
+          <p className={`whitespace-pre-wrap ${languageClass}`}>{content}</p>
         </div>
         <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center shrink-0">
           <svg
@@ -38,7 +65,10 @@ export default function ChatMessage({ message }: ChatMessageProps) {
   const renderContent = () => {
     // Handle simple text
     if (typeof content === 'string') {
-      return <p className="text-gray-700 whitespace-pre-wrap">{content}</p>;
+      // Check for Hindi text in string content
+      const textIsHindi = /[\u0900-\u097F]/.test(content);
+      const hindiClass = textIsHindi ? "font-hindi" : "";
+      return <p className={`text-gray-700 whitespace-pre-wrap ${hindiClass}`}>{content}</p>;
     }
     
     // For more complex content structures from API
@@ -47,11 +77,16 @@ export default function ChatMessage({ message }: ChatMessageProps) {
       if (Array.isArray(content)) {
         return content.map((part, idx) => {
           if (typeof part === 'string') {
-            return <p key={idx} className="text-gray-700 whitespace-pre-wrap">{part}</p>;
+            // Check each part individually for Hindi content
+            const partIsHindi = /[\u0900-\u097F]/.test(part);
+            const hindiClass = partIsHindi ? "font-hindi" : "";
+            return <p key={idx} className={`text-gray-700 whitespace-pre-wrap ${hindiClass}`}>{part}</p>;
           }
           // Handle image reference
           if (part.type === 'image' && part.image) {
-            const imageUrl = images[part.image] || part.image;
+            // Type assertion for part.image as keyof typeof images
+            const imageKey = part.image as keyof typeof images;
+            const imageUrl = imageKey in images ? images[imageKey] : part.image;
             return (
               <img 
                 key={idx}
@@ -67,7 +102,10 @@ export default function ChatMessage({ message }: ChatMessageProps) {
       
       // If the API returns a text property
       if ('text' in content) {
-        return <p className="text-gray-700 whitespace-pre-wrap">{content.text}</p>;
+        // Check for Hindi content in text property
+        const textIsHindi = typeof content.text === 'string' && /[\u0900-\u097F]/.test(content.text);
+        const hindiClass = textIsHindi ? "font-hindi" : "";
+        return <p className={`text-gray-700 whitespace-pre-wrap ${hindiClass}`}>{content.text}</p>;
       }
     }
     

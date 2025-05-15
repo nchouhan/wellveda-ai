@@ -128,6 +128,32 @@ export default function ChatInterface({
         </div>
       </div>
       
+      {/* Language Toggle */}
+      <div className="absolute bottom-[7.5rem] right-4 z-10 lg:right-8">
+        <div className="inline-flex rounded-md shadow-sm">
+          <button
+            onClick={() => setLanguage('english')}
+            className={`px-3 py-1 text-xs font-medium border rounded-l-lg ${
+              language === 'english'
+                ? 'bg-primary text-white border-primary'
+                : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+            }`}
+          >
+            English
+          </button>
+          <button
+            onClick={() => setLanguage('hindi')}
+            className={`px-3 py-1 text-xs font-medium border rounded-r-lg ${
+              language === 'hindi'
+                ? 'bg-primary text-white border-primary'
+                : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+            }`}
+          >
+            हिंदी
+          </button>
+        </div>
+      </div>
+      
       {/* Input Area */}
       <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-background to-transparent pt-16 pb-4">
         <div className="max-w-3xl mx-auto px-4">
@@ -135,7 +161,7 @@ export default function ChatInterface({
             <div className="bg-white dark:bg-card rounded-xl shadow-md flex items-end">
               <Textarea
                 ref={messageInputRef}
-                placeholder="Ask about Ayurvedic wellness..."
+                placeholder={translations[language].placeholder}
                 value={message}
                 onChange={handleTextareaChange}
                 onKeyDown={handleKeyDown}
@@ -147,7 +173,7 @@ export default function ChatInterface({
                 onClick={handleSendMessage}
                 disabled={message.trim() === "" || isLoading}
                 className="p-3 text-white rounded-r-xl bg-primary hover:bg-primary-dark transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center mr-1 mb-1"
-                aria-label="Send message"
+                aria-label={translations[language].sendButton}
               >
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
@@ -165,7 +191,7 @@ export default function ChatInterface({
               </Button>
             </div>
             <p className="text-xs text-gray-500 mt-2 ml-2">
-              WellVeda AI is designed for educational purposes and should not replace professional medical advice.
+              {translations[language].disclaimer}
             </p>
           </div>
         </div>
