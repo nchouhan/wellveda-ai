@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Accordion,
   AccordionContent,
@@ -13,8 +13,6 @@ interface FAQAccordionProps {
 }
 
 export default function FAQAccordion({ language, onSelectQuestion }: FAQAccordionProps) {
-  const [expanded, setExpanded] = useState(false);
-  
   // Define FAQ questions in both languages
   const faqQuestions = {
     english: [
@@ -72,20 +70,14 @@ export default function FAQAccordion({ language, onSelectQuestion }: FAQAccordio
       "आयुर्वेद में मर्म बिंदुओं का क्या महत्व है?"
     ]
   };
-  
-  // Determine how many questions to display based on expanded state
-  const visibleQuestions = expanded 
-    ? faqQuestions[language] 
-    : faqQuestions[language].slice(0, 6);
-  
+
   return (
-    <div className="mt-4 mb-8">
-      <h3 className={`text-lg font-medium mb-2 ${language === 'hindi' ? 'font-hindi' : ''}`}>
+    <div className="w-full">
+      <h3 className={`font-semibold mb-4 text-lg ${language === 'hindi' ? 'font-hindi' : ''}`}>
         {language === 'english' ? 'Commonly Asked Questions' : 'अक्सर पूछे जाने वाले प्रश्न'}
       </h3>
-      
       <Accordion type="single" collapsible className="w-full">
-        {visibleQuestions.map((question, index) => (
+        {faqQuestions[language].slice(0, 10).map((question, index) => (
           <AccordionItem key={index} value={`item-${index}`}>
             <AccordionTrigger className={`text-sm text-left ${language === 'hindi' ? 'font-hindi' : ''}`}>
               {question}
@@ -102,18 +94,6 @@ export default function FAQAccordion({ language, onSelectQuestion }: FAQAccordio
           </AccordionItem>
         ))}
       </Accordion>
-      
-      <div className="text-center mt-4">
-        <Button 
-          variant="outline" 
-          onClick={() => setExpanded(!expanded)}
-          className={`text-sm ${language === 'hindi' ? 'font-hindi' : ''}`}
-        >
-          {expanded
-            ? (language === 'english' ? 'Show Less' : 'कम दिखाएं')
-            : (language === 'english' ? 'Show More Questions' : 'अधिक प्रश्न दिखाएं')}
-        </Button>
-      </div>
     </div>
   );
 }

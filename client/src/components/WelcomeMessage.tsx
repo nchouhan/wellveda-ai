@@ -195,8 +195,6 @@ export default function WelcomeMessage({ onQuestionSelect }: WelcomeMessageProps
         </Card>
       </div>
       
-
-      
       <div className="flex items-start gap-3">
         <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center shrink-0">
           <svg

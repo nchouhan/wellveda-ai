@@ -3,6 +3,7 @@ import { useChat } from "@/hooks/useChat";
 import ChatInterface from "@/components/ChatInterface";
 import Sidebar from "@/components/Sidebar";
 import ChatHeader from "@/components/ChatHeader";
+import FAQDrawer from "@/components/FAQDrawer";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 // Create language context
@@ -96,6 +97,11 @@ export default function Home() {
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col h-screen overflow-hidden">
           <ChatHeader />
+          {/* FAQ Drawer */}
+          <FAQDrawer 
+            language={language} 
+            onSelectQuestion={sendMessage} 
+          />
           <ChatInterface
             messages={messages}
             isLoading={isLoading}
