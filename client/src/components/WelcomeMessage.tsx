@@ -125,8 +125,8 @@ export default function WelcomeMessage({ onQuestionSelect }: WelcomeMessageProps
         <div className="flex flex-col lg:flex-row items-center gap-6">
           <div className="shrink-0">
             <img 
-              src={images.herbs1} 
-              alt="Ayurvedic herbs collection" 
+              src={uiLanguage === 'english' ? images.herbs3 : images.herbs4} 
+              alt="Ayurvedic wellness" 
               className="rounded-lg h-40 w-40 object-cover"
             />
           </div>
