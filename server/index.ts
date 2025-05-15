@@ -6,28 +6,39 @@ import cors from "cors";
 const app = express();
 
 // Configure CORS for cross-origin requests
-// This is important for when the frontend is hosted on a static deployment
+// This is important when frontend and backend are on different domains
 const corsOptions = {
   origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
     // Allow requests with no origin (like mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
     
-    // List of allowed origins
-    // Add your static deployment URL here once you know it
+    // List of allowed origins - in production, you'd restrict this
     const allowedOrigins = [
       'http://localhost:3000',
       'http://localhost:5000',
       'https://15a864c7-45f9-48b6-8e27-ed032131bf3c-00-1u23l4zta3l4u.picard.replit.dev',
-      // Add your static deployment URL here, e.g.:
-      // 'https://your-static-deployment.replit.app',
+      // Add your static deployment URLs, e.g.:
+      'https://wellveda-health-ncailab.replit.app',
+      // Other environments would be added here
     ];
     
     // Always log the origin for debugging
     console.log('Request origin:', origin);
     
-    // Check if origin is in the allowed list
-    // For development, we're being permissive with domains containing '.replit.app'
-    if (allowedOrigins.includes(origin) || (typeof origin === 'string' && origin.includes('.replit.app'))) {
+    // In production on GCP, our frontend and backend would be on the same domain,
+    // so CORS wouldn't be an issue. But we're being permissive here for development
+    // and different deployment scenarios.
+    
+    // For Cloud Run, we set a very permissive CORS policy during development
+    // In a real production environment, you would restrict this to specific origins
+    const isDevelopment = process.env.NODE_ENV !== 'production';
+    if (isDevelopment || 
+        allowedOrigins.includes(origin) || 
+        (typeof origin === 'string' && (
+          origin.includes('.replit.app') || 
+          origin.includes('.run.app') // Cloud Run URLs 
+        ))
+    ) {
       callback(null, true);
     } else {
       console.warn(`Origin ${origin} not allowed by CORS`);
