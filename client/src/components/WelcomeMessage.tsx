@@ -154,8 +154,8 @@ export default function WelcomeMessage({ onQuestionSelect }: WelcomeMessageProps
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <Card className="bg-white dark:bg-card rounded-xl shadow-sm overflow-hidden">
           <img 
-            src={images.nature1} 
-            alt="Calming forest landscape" 
+            src={images.nature2} 
+            alt="Calming nature view" 
             className="w-full h-32 object-cover"
           />
           <CardContent className="p-4">
@@ -168,8 +168,8 @@ export default function WelcomeMessage({ onQuestionSelect }: WelcomeMessageProps
         
         <Card className="bg-white dark:bg-card rounded-xl shadow-sm overflow-hidden">
           <img 
-            src={images.herbs2} 
-            alt="Ayurvedic herbs and powders display" 
+            src={images.herbs3} 
+            alt="Turmeric and Ayurvedic spices" 
             className="w-full h-32 object-cover"
           />
           <CardContent className="p-4">
@@ -183,7 +183,7 @@ export default function WelcomeMessage({ onQuestionSelect }: WelcomeMessageProps
         <Card className="bg-white dark:bg-card rounded-xl shadow-sm overflow-hidden">
           <img 
             src={images.modern1} 
-            alt="Modern wellness space" 
+            alt="Yoga and meditation practice" 
             className="w-full h-32 object-cover"
           />
           <CardContent className="p-4">
