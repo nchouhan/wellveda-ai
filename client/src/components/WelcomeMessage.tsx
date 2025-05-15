@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { images } from "@/lib/images";
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/pages/home"; // Import the language context hook
-import FAQAccordion from "@/components/FAQAccordion"; // Import the FAQ Accordion component
 
 interface WelcomeMessageProps {
   onQuestionSelect: (question: string) => void;
@@ -196,13 +195,7 @@ export default function WelcomeMessage({ onQuestionSelect }: WelcomeMessageProps
         </Card>
       </div>
       
-      {/* FAQ Accordion */}
-      <Card className="bg-white dark:bg-card rounded-xl shadow-sm p-6 mb-6">
-        <FAQAccordion 
-          language={uiLanguage} 
-          onSelectQuestion={onQuestionSelect} 
-        />
-      </Card>
+
       
       <div className="flex items-start gap-3">
         <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center shrink-0">
