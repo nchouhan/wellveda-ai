@@ -11,6 +11,7 @@ interface ChatInterfaceProps {
   isLoading: boolean;
   onSendMessage: (content: string) => void;
   messageInputRef: RefObject<HTMLTextAreaElement>;
+  language?: string;
 }
 
 export default function ChatInterface({
@@ -18,12 +19,28 @@ export default function ChatInterface({
   isLoading,
   onSendMessage,
   messageInputRef,
+  language = "en"
 }: ChatInterfaceProps) {
   const [message, setMessage] = useState("");
-  const [language, setLanguage] = useState<'english' | 'hindi'>('english');
+  // Define the type more explicitly
+  type UILanguageType = 'english' | 'hindi';
+  const [localUILang, setLocalUILang] = useState<UILanguageType>(language === "hi" ? 'hindi' : 'english');
   const chatContainerRef = useRef<HTMLDivElement>(null);
   
-  const translations = {
+  // Update local UI language when prop changes
+  useEffect(() => {
+    setLocalUILang(language === "hi" ? 'hindi' : 'english');
+  }, [language]);
+  
+  // Define a type for translations
+  type TranslationType = {
+    placeholder: string;
+    disclaimer: string;
+    sendButton: string;
+  };
+  
+  // Define translations with proper typing
+  const translations: Record<UILanguageType, TranslationType> = {
     english: {
       placeholder: "Ask about Ayurvedic wellness...",
       disclaimer: "WellVeda AI is designed for educational purposes and should not replace professional medical advice.",
@@ -35,6 +52,9 @@ export default function ChatInterface({
       sendButton: "संदेश भेजें"
     }
   };
+  
+  // Get translations based on current language
+  const currentTranslations: TranslationType = translations[localUILang];
 
   const handleSendMessage = () => {
     if (message.trim() && !isLoading) {
@@ -128,31 +148,7 @@ export default function ChatInterface({
         </div>
       </div>
       
-      {/* Language Toggle */}
-      <div className="absolute bottom-[7.5rem] right-4 z-10 lg:right-8">
-        <div className="inline-flex rounded-md shadow-sm">
-          <button
-            onClick={() => setLanguage('english')}
-            className={`px-3 py-1 text-xs font-medium border rounded-l-lg ${
-              language === 'english'
-                ? 'bg-primary text-white border-primary'
-                : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
-            }`}
-          >
-            English
-          </button>
-          <button
-            onClick={() => setLanguage('hindi')}
-            className={`px-3 py-1 text-xs font-medium border rounded-r-lg ${
-              language === 'hindi'
-                ? 'bg-primary text-white border-primary'
-                : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
-            }`}
-          >
-            हिंदी
-          </button>
-        </div>
-      </div>
+      {/* We no longer need this language toggle as it's now in the sidebar */}
       
       {/* Input Area */}
       <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-background to-transparent pt-16 pb-4">
@@ -161,7 +157,7 @@ export default function ChatInterface({
             <div className="bg-white dark:bg-card rounded-xl shadow-md flex items-end">
               <Textarea
                 ref={messageInputRef}
-                placeholder={translations[language].placeholder}
+                placeholder={currentTranslations.placeholder}
                 value={message}
                 onChange={handleTextareaChange}
                 onKeyDown={handleKeyDown}
@@ -173,7 +169,7 @@ export default function ChatInterface({
                 onClick={handleSendMessage}
                 disabled={message.trim() === "" || isLoading}
                 className="p-3 text-white rounded-r-xl bg-primary hover:bg-primary-dark transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center mr-1 mb-1"
-                aria-label={translations[language].sendButton}
+                aria-label={currentTranslations.sendButton}
               >
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
@@ -191,7 +187,7 @@ export default function ChatInterface({
               </Button>
             </div>
             <p className="text-xs text-gray-500 mt-2 ml-2">
-              {translations[language].disclaimer}
+              {currentTranslations.disclaimer}
             </p>
           </div>
         </div>

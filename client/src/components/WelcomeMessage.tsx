@@ -1,16 +1,33 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { images } from "@/lib/images";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLanguage } from "@/pages/home"; // Import the language context hook
 
 interface WelcomeMessageProps {
   onQuestionSelect: (question: string) => void;
 }
 
 export default function WelcomeMessage({ onQuestionSelect }: WelcomeMessageProps) {
-  const [language, setLanguage] = useState<'english' | 'hindi'>('english');
+  // Use the language context
+  const { language: contextLanguage, setLanguage: setContextLanguage } = useLanguage();
+  // Use internal state for UI language (english/hindi instead of en/hi)
+  const [uiLanguage, setUILanguage] = useState<'english' | 'hindi'>(contextLanguage === 'hi' ? 'hindi' : 'english');
+  
+  // Update UI language when context language changes
+  useEffect(() => {
+    setUILanguage(contextLanguage === 'hi' ? 'hindi' : 'english');
+  }, [contextLanguage]);
 
-  const suggestedQuestions = {
+  // Define types for the language options
+  type UILanguageType = 'english' | 'hindi';
+  
+  // Define a type for suggested questions
+  type SuggestedQuestionsType = {
+    [key in UILanguageType]: string[];
+  };
+  
+  const suggestedQuestions: SuggestedQuestionsType = {
     english: [
       "What is my dosha type?",
       "Remedies for stress",
@@ -25,7 +42,25 @@ export default function WelcomeMessage({ onQuestionSelect }: WelcomeMessageProps
     ]
   };
 
-  const cardTitles = {
+  // Define a type for card titles
+  type CardTitleType = {
+    welcome: string;
+    description: string;
+    naturalBalance: string;
+    naturalDesc: string;
+    herbalWisdom: string;
+    herbalDesc: string;
+    modernWellness: string;
+    modernDesc: string;
+    greeting: string;
+  };
+  
+  // Define a type for all card titles
+  type CardTitlesType = {
+    [key in UILanguageType]: CardTitleType;
+  };
+  
+  const cardTitles: CardTitlesType = {
     english: {
       welcome: "Welcome to WellVeda AI",
       description: "I'm your personal Ayurvedic wellness assistant, here to answer your questions about traditional Ayurvedic practices, herbs, remedies, and wellness routines.",
@@ -50,17 +85,20 @@ export default function WelcomeMessage({ onQuestionSelect }: WelcomeMessageProps
     }
   };
 
-  const currentQuestions = suggestedQuestions[language];
-  const currentTitles = cardTitles[language];
+  const currentQuestions = suggestedQuestions[uiLanguage];
+  const currentTitles = cardTitles[uiLanguage];
 
   return (
     <>
       <div className="flex justify-end mb-3">
         <div className="inline-flex rounded-md shadow-sm">
           <button
-            onClick={() => setLanguage('english')}
+            onClick={() => {
+              setUILanguage('english');
+              setContextLanguage('en');
+            }}
             className={`px-4 py-2 text-sm font-medium border rounded-l-lg ${
-              language === 'english'
+              uiLanguage === 'english'
                 ? 'bg-primary text-white border-primary'
                 : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
             }`}
@@ -68,9 +106,12 @@ export default function WelcomeMessage({ onQuestionSelect }: WelcomeMessageProps
             English
           </button>
           <button
-            onClick={() => setLanguage('hindi')}
+            onClick={() => {
+              setUILanguage('hindi');
+              setContextLanguage('hi');
+            }}
             className={`px-4 py-2 text-sm font-medium border rounded-r-lg ${
-              language === 'hindi'
+              uiLanguage === 'hindi'
                 ? 'bg-primary text-white border-primary'
                 : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
             }`}
