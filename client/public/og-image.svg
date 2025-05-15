@@ -1,0 +1,36 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with gradient -->
+  <rect width="1200" height="630" fill="url(#paint0_linear)" />
+  
+  <!-- Decorative elements - Ayurvedic symbols and patterns -->
+  <path d="M100,100 Q150,50 200,100 T300,100 T400,100 T500,100 T600,100 T700,100 T800,100 T900,100 T1000,100 T1100,100" stroke="#FFFFFF" stroke-opacity="0.2" stroke-width="4" fill="none" />
+  <path d="M100,530 Q150,480 200,530 T300,530 T400,530 T500,530 T600,530 T700,530 T800,530 T900,530 T1000,530 T1100,530" stroke="#FFFFFF" stroke-opacity="0.2" stroke-width="4" fill="none" />
+  
+  <!-- Circular mandala element -->
+  <circle cx="200" cy="315" r="100" fill="none" stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="2" />
+  <circle cx="200" cy="315" r="80" fill="none" stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="2" />
+  <circle cx="200" cy="315" r="60" fill="none" stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="2" />
+  <circle cx="1000" cy="315" r="100" fill="none" stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="2" />
+  <circle cx="1000" cy="315" r="80" fill="none" stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="2" />
+  <circle cx="1000" cy="315" r="60" fill="none" stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="2" />
+  
+  <!-- Lotus symbol -->
+  <path d="M600,180 C620,150 640,140 660,150 C680,160 690,180 700,200 C710,180 720,160 740,150 C760,140 780,150 800,180 C780,190 760,200 740,205 C720,210 700,210 680,205 C660,200 640,190 620,180 Z" fill="#FFFFFF" fill-opacity="0.4" />
+  
+  <!-- Title -->
+  <text x="600" y="300" font-family="Arial, sans-serif" font-size="64" font-weight="bold" fill="white" text-anchor="middle">WellVeda AI</text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="380" font-family="Arial, sans-serif" font-size="32" fill="white" text-anchor="middle">Ayurvedic Wellness Assistant</text>
+  
+  <!-- Tagline -->
+  <text x="600" y="440" font-family="Arial, sans-serif" font-size="24" fill="white" text-anchor="middle">Discover your personal balance with ancient Ayurvedic wisdom</text>
+  
+  <!-- Gradient definition -->
+  <defs>
+    <linearGradient id="paint0_linear" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7e22ce" />
+      <stop offset="1" stop-color="#4c1d95" />
+    </linearGradient>
+  </defs>
+</svg>
