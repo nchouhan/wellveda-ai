@@ -1,8 +1,45 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import cors from "cors";
 
 const app = express();
+
+// Configure CORS for cross-origin requests
+// This is important for when the frontend is hosted on a static deployment
+const corsOptions = {
+  origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
+    // Allow requests with no origin (like mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+    
+    // List of allowed origins
+    // Add your static deployment URL here once you know it
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:5000',
+      'https://15a864c7-45f9-48b6-8e27-ed032131bf3c-00-1u23l4zta3l4u.picard.replit.dev',
+      // Add your static deployment URL here, e.g.:
+      // 'https://your-static-deployment.replit.app',
+    ];
+    
+    // Always log the origin for debugging
+    console.log('Request origin:', origin);
+    
+    // Check if origin is in the allowed list
+    // For development, we're being permissive with domains containing '.replit.app'
+    if (allowedOrigins.includes(origin) || (typeof origin === 'string' && origin.includes('.replit.app'))) {
+      callback(null, true);
+    } else {
+      console.warn(`Origin ${origin} not allowed by CORS`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true, // Allow credentials (cookies, auth headers)
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
