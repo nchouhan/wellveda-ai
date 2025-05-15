@@ -3,6 +3,8 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { messageRequestSchema, threadRequestSchema } from "@shared/schema";
 import OpenAI from "openai";
+import path from "path";
+import fs from "fs";
 
 const ASSISTANT_ID = "asst_NXGBmeSbyaBdsWNjGzSG467R";
 
@@ -15,6 +17,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Health check endpoint
   app.get("/api/health", (_req, res) => {
     res.json({ status: "ok" });
+  });
+  
+  // SEO Routes - Serve SEO-related static files directly
+  const publicDir = path.join(process.cwd(), 'client', 'public');
+  
+  // Serve sitemap.xml
+  app.get("/sitemap.xml", (req, res) => {
+    const sitemapPath = path.join(publicDir, 'sitemap.xml');
+    if (fs.existsSync(sitemapPath)) {
+      res.contentType('application/xml');
+      res.sendFile(sitemapPath);
+    } else {
+      res.status(404).send('Sitemap not found');
+    }
+  });
+  
+  // Serve robots.txt
+  app.get("/robots.txt", (req, res) => {
+    const robotsPath = path.join(publicDir, 'robots.txt');
+    if (fs.existsSync(robotsPath)) {
+      res.contentType('text/plain');
+      res.sendFile(robotsPath);
+    } else {
+      res.status(404).send('Robots.txt not found');
+    }
+  });
+  
+  // Serve favicon
+  app.get("/favicon.ico", (req, res) => {
+    const faviconPath = path.join(publicDir, 'favicon.svg');
+    if (fs.existsSync(faviconPath)) {
+      res.contentType('image/svg+xml');
+      res.sendFile(faviconPath);
+    } else {
+      res.status(404).send('Favicon not found');
+    }
+  });
+  
+  // Serve og-image for social sharing
+  app.get("/og-image.jpg", (req, res) => {
+    const ogImagePath = path.join(publicDir, 'og-image.svg');
+    if (fs.existsSync(ogImagePath)) {
+      res.contentType('image/svg+xml');
+      res.sendFile(ogImagePath);
+    } else {
+      res.status(404).send('OG Image not found');
+    }
   });
   
   // Create a new thread
