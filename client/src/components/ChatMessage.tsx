@@ -75,7 +75,7 @@ export default function ChatMessage({ message }: ChatMessageProps) {
     if (typeof content === 'object' && content !== null) {
       // If the API returns a content array
       if (Array.isArray(content)) {
-        return content.map((part, idx) => {
+        return content.map((part: any, idx) => {
           if (typeof part === 'string') {
             // Check each part individually for Hindi content
             const partIsHindi = /[\u0900-\u097F]/.test(part);
@@ -83,15 +83,19 @@ export default function ChatMessage({ message }: ChatMessageProps) {
             return <p key={idx} className={`text-gray-700 whitespace-pre-wrap ${hindiClass}`}>{part}</p>;
           }
           // Handle image reference
-          if (part.type === 'image' && part.image) {
-            // Type assertion for part.image as keyof typeof images
-            const imageKey = part.image as keyof typeof images;
-            const imageUrl = imageKey in images ? images[imageKey] : part.image;
+          if (typeof part === 'object' && part?.type === 'image' && part?.image) {
+            // Safe way to handle image references
+            const imageStr = part.image as string;
+            // Check if the image string is a key in our images object
+            const imageUrl = imageStr in images 
+              ? images[imageStr as keyof typeof images] 
+              : imageStr;
+              
             return (
               <img 
                 key={idx}
                 src={imageUrl} 
-                alt={part.alt || "Ayurvedic wellness image"} 
+                alt={(part.alt as string) || "Ayurvedic wellness image"} 
                 className="rounded-lg w-full h-auto my-3"
               />
             );
@@ -101,11 +105,12 @@ export default function ChatMessage({ message }: ChatMessageProps) {
       }
       
       // If the API returns a text property
-      if ('text' in content) {
-        // Check for Hindi content in text property
-        const textIsHindi = typeof content.text === 'string' && /[\u0900-\u097F]/.test(content.text);
+      if ('text' in content && content.text !== undefined) {
+        // Check for Hindi content in text property and ensure content.text is treated as string
+        const contentText = String(content.text);
+        const textIsHindi = /[\u0900-\u097F]/.test(contentText);
         const hindiClass = textIsHindi ? "font-hindi" : "";
-        return <p className={`text-gray-700 whitespace-pre-wrap ${hindiClass}`}>{content.text}</p>;
+        return <p className={`text-gray-700 whitespace-pre-wrap ${hindiClass}`}>{contentText}</p>;
       }
     }
     

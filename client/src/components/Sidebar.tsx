@@ -1,14 +1,38 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
 
 interface SidebarProps {
   isOpen: boolean;
   onNewChat: () => void;
   onClose: () => void;
+  language?: string;
+  onLanguageChange?: (lang: string) => void;
 }
 
-export default function Sidebar({ isOpen, onNewChat, onClose }: SidebarProps) {
+export default function Sidebar({ 
+  isOpen, 
+  onNewChat, 
+  onClose, 
+  language = "en", 
+  onLanguageChange 
+}: SidebarProps) {
+  const [currentLang, setCurrentLang] = useState<string>(language);
+  
+  // Handle language changes
+  const handleLanguageChange = (lang: string) => {
+    setCurrentLang(lang);
+    if (onLanguageChange) {
+      onLanguageChange(lang);
+    }
+  };
+  
+  // Update internal state when prop changes
+  useEffect(() => {
+    setCurrentLang(language);
+  }, [language]);
+  
   const handleNewChat = () => {
     onNewChat();
     onClose();
@@ -79,32 +103,75 @@ export default function Sidebar({ isOpen, onNewChat, onClose }: SidebarProps) {
                   <line x1="8" y1="11" x2="8" y2="11.01" />
                   <line x1="16" y1="11" x2="16" y2="11.01" />
                 </svg>
-                <span>New Conversation</span>
+                <span className={currentLang === "hi" ? "font-hindi" : ""}>
+                  {currentLang === "en" ? "New Conversation" : "नई बातचीत"}
+                </span>
               </Button>
             </div>
             
             <div className="flex-grow p-4 overflow-auto custom-scrollbar">
-              <h2 className="font-medium text-sm uppercase text-sidebar-foreground/50 mb-2">About Ayurveda</h2>
+              <h2 className="font-medium text-sm uppercase text-sidebar-foreground/50 mb-2">
+                {currentLang === "en" ? "About Ayurveda" : "आयुर्वेद के बारे में"}
+              </h2>
               <div className="space-y-3">
                 <Card className="bg-sidebar-accent hover:shadow-sm cursor-pointer transition-all p-3">
-                  <h3 className="font-medium">Discover Doshas</h3>
-                  <p className="text-xs text-sidebar-foreground/60">Learn about Vata, Pitta, and Kapha</p>
+                  <h3 className={`font-medium ${currentLang === "hi" ? "font-hindi" : ""}`}>
+                    {currentLang === "en" ? "Discover Doshas" : "दोषों को जानें"}
+                  </h3>
+                  <p className={`text-xs text-sidebar-foreground/60 ${currentLang === "hi" ? "font-hindi" : ""}`}>
+                    {currentLang === "en" ? "Learn about Vata, Pitta, and Kapha" : "वात, पित्त और कफ के बारे में जानें"}
+                  </p>
                 </Card>
                 <Card className="bg-sidebar-accent hover:shadow-sm cursor-pointer transition-all p-3">
-                  <h3 className="font-medium">Seasonal Wellness</h3>
-                  <p className="text-xs text-sidebar-foreground/60">Adapt your routine with the seasons</p>
+                  <h3 className={`font-medium ${currentLang === "hi" ? "font-hindi" : ""}`}>
+                    {currentLang === "en" ? "Seasonal Wellness" : "मौसमी स्वास्थ्य"}
+                  </h3>
+                  <p className={`text-xs text-sidebar-foreground/60 ${currentLang === "hi" ? "font-hindi" : ""}`}>
+                    {currentLang === "en" ? "Adapt your routine with the seasons" : "मौसम के अनुसार अपनी दिनचर्या अपनाएं"}
+                  </p>
                 </Card>
                 <Card className="bg-sidebar-accent hover:shadow-sm cursor-pointer transition-all p-3">
-                  <h3 className="font-medium">Daily Practices</h3>
-                  <p className="text-xs text-sidebar-foreground/60">Simple routines for balance</p>
+                  <h3 className={`font-medium ${currentLang === "hi" ? "font-hindi" : ""}`}>
+                    {currentLang === "en" ? "Daily Practices" : "दैनिक अभ्यास"}
+                  </h3>
+                  <p className={`text-xs text-sidebar-foreground/60 ${currentLang === "hi" ? "font-hindi" : ""}`}>
+                    {currentLang === "en" ? "Simple routines for balance" : "संतुलन के लिए सरल दिनचर्या"}
+                  </p>
                 </Card>
               </div>
             </div>
             
-            <div className="p-4 border-t border-sidebar-border mt-auto">
+            {/* Language selector */}
+            <div className="p-3 border-t border-sidebar-border">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-sidebar-foreground/70">Language</span>
+                <div className="flex space-x-2">
+                  <Button 
+                    size="sm" 
+                    variant={currentLang === "en" ? "default" : "outline"}
+                    onClick={() => handleLanguageChange("en")}
+                    className={`px-3 py-1 text-xs ${currentLang === "en" ? 'bg-sidebar-primary' : ''}`}
+                  >
+                    English
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant={currentLang === "hi" ? "default" : "outline"}
+                    onClick={() => handleLanguageChange("hi")}
+                    className={`px-3 py-1 text-xs ${currentLang === "hi" ? 'bg-sidebar-primary' : ''} font-hindi`}
+                  >
+                    हिंदी
+                  </Button>
+                </div>
+              </div>
+            </div>
+            
+            <div className="p-4 border-t border-sidebar-border">
               <div className="text-xs text-sidebar-foreground/50">
-                <p>WellVeda AI uses OpenAI's assistant technology</p>
-                <p className="mt-1">Powered by assistant ID: asst_NXGBmeSbyaBdsWNjGzSG467R</p>
+                <p>{currentLang === "en" ? "WellVeda AI uses OpenAI's assistant technology" : "वेलवेदा एआई ओपनएआई की सहायक तकनीक का उपयोग करता है"}</p>
+                <p className="mt-1">
+                  {currentLang === "en" ? "Powered by assistant ID" : "सहायक आईडी द्वारा संचालित"}: asst_NXGBmeSbyaBdsWNjGzSG467R
+                </p>
               </div>
             </div>
           </motion.div>
